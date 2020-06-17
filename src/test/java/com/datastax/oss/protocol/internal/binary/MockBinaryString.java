@@ -22,12 +22,13 @@ import java.util.LinkedList;
 import java.util.Objects;
 
 /** A DSL that simulates a mock binary string for reading and writing, to use in our unit tests. */
+// ErrorProne issues a warning about LinkedList. The suggested alternative is ArrayDeque, but it
+// does not override equals. Keeping LinkedList here since performance is not crucial in tests.
+@SuppressWarnings("JdkObsolete")
 public class MockBinaryString {
 
-  // The suggested alternative is ArrayDeque, but it does not override equals. Keeping LinkedList
-  // here since performance is not crucial in tests.
-  @SuppressWarnings("JdkObsolete")
-  private final LinkedList<Element> elements = new LinkedList<>();
+  private LinkedList<Element> elements = new LinkedList<>();
+  private LinkedList<Element> mark;
 
   public MockBinaryString byte_(int value) {
     append(Element.Type.BYTE, (byte) value);
@@ -81,6 +82,19 @@ public class MockBinaryString {
     return this;
   }
 
+  public void markReaderIndex() {
+    mark = new LinkedList<>();
+    mark.addAll(elements);
+  }
+
+  public void resetReaderIndex() {
+    if (mark == null) {
+      throw new IllegalStateException("No mark, call markReaderIndex() first");
+    }
+    elements = mark;
+    mark = null;
+  }
+
   public MockBinaryString copy() {
     return new MockBinaryString().append(this);
   }
@@ -129,6 +143,10 @@ public class MockBinaryString {
 
   Element pop() {
     return elements.pop();
+  }
+
+  Element pollFirst() {
+    return elements.pollFirst();
   }
 
   Element pollLast() {

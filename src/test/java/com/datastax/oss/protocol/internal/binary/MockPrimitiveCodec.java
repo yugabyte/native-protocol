@@ -21,6 +21,7 @@ import com.datastax.oss.protocol.internal.PrimitiveCodec;
 import com.datastax.oss.protocol.internal.util.Bytes;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.util.zip.CRC32;
 
 public class MockPrimitiveCodec implements PrimitiveCodec<MockBinaryString> {
   public static final MockPrimitiveCodec INSTANCE = new MockPrimitiveCodec();
@@ -38,6 +39,16 @@ public class MockPrimitiveCodec implements PrimitiveCodec<MockBinaryString> {
   @Override
   public int sizeOf(MockBinaryString toMeasure) {
     return toMeasure.size();
+  }
+
+  @Override
+  public void markReaderIndex(MockBinaryString source) {
+    source.markReaderIndex();
+  }
+
+  @Override
+  public void resetReaderIndex(MockBinaryString source) {
+    source.resetReaderIndex();
   }
 
   @Override
@@ -90,6 +101,37 @@ public class MockPrimitiveCodec implements PrimitiveCodec<MockBinaryString> {
   @Override
   public String readLongString(MockBinaryString source) {
     return (String) pop(source, MockBinaryString.Element.Type.LONG_STRING);
+  }
+
+  @Override
+  public MockBinaryString readRetainingSlice(MockBinaryString source, int sliceLength) {
+    MockBinaryString result = new MockBinaryString();
+    for (int i = 0; i < sliceLength; i++) {
+      try {
+        result = result.byte_(readByte(source) & 0xFF);
+      } catch (Exception e) {
+        throw new IllegalArgumentException(
+            "PrimitiveCodec.readRetainingSlice() is only supported on MockBinaryStrings that were assembled byte-by-byte.",
+            e);
+      }
+    }
+    return result;
+  }
+
+  @Override
+  public void updateCrc(MockBinaryString source, CRC32 crc) {
+    source = source.copy(); // don't consume the input
+    MockBinaryString.Element element;
+    while ((element = source.pollFirst()) != null) {
+      if (element.type == MockBinaryString.Element.Type.BYTE) {
+        crc.update(((byte) element.value) & 0xFF);
+      } else {
+        throw new IllegalArgumentException(
+            "PrimitiveCodec.updateCrc() is only supported on MockBinaryStrings that were assembled byte-by-byte. "
+                + "Unexpected type "
+                + element.type);
+      }
+    }
   }
 
   @Override
