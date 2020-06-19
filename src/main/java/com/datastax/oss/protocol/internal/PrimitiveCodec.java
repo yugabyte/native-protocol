@@ -43,6 +43,7 @@ public interface PrimitiveCodec<B> {
    */
   void release(B toRelease);
 
+  /** The number of <b>readable</b> bytes in the given element. */
   int sizeOf(B toMeasure);
 
   B concat(B left, B right);

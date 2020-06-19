@@ -105,17 +105,7 @@ public class MockPrimitiveCodec implements PrimitiveCodec<MockBinaryString> {
 
   @Override
   public MockBinaryString readRetainingSlice(MockBinaryString source, int sliceLength) {
-    MockBinaryString result = new MockBinaryString();
-    for (int i = 0; i < sliceLength; i++) {
-      try {
-        result = result.byte_(readByte(source) & 0xFF);
-      } catch (Exception e) {
-        throw new IllegalArgumentException(
-            "PrimitiveCodec.readRetainingSlice() is only supported on MockBinaryStrings that were assembled byte-by-byte.",
-            e);
-      }
-    }
-    return result;
+    return source.slice(sliceLength);
   }
 
   @Override
