@@ -37,7 +37,7 @@ public class SegmentCodec<B> {
   }
 
   /** The length of the segment header, excluding the 3-byte trailing CRC. */
-  int headerLength() {
+  public int headerLength() {
     return compress ? COMPRESSED_HEADER_LENGTH : UNCOMPRESSED_HEADER_LENGTH;
   }
 
