@@ -67,6 +67,20 @@ public class MockPrimitiveCodec implements PrimitiveCodec<MockBinaryString> {
   }
 
   @Override
+  public int readInt(MockBinaryString source, int offset) {
+    MockBinaryString copy = source.copy();
+    int skipped = 0;
+    while (skipped < offset) {
+      MockBinaryString.Element element = copy.pop();
+      skipped += element.size();
+    }
+    if (skipped != offset) {
+      throw new IllegalArgumentException("Offset must match an exact number of elements");
+    }
+    return readInt(copy);
+  }
+
+  @Override
   public InetAddress readInetAddr(MockBinaryString source) {
     return (InetAddress) pop(source, MockBinaryString.Element.Type.INETADDR);
   }

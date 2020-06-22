@@ -56,6 +56,12 @@ public interface PrimitiveCodec<B> {
 
   int readInt(B source);
 
+  /**
+   * Reads an int at the given offset (relative to the current read index). This method does not
+   * consume any data.
+   */
+  int readInt(B source, int offset);
+
   InetAddress readInetAddr(B source);
 
   long readLong(B source);

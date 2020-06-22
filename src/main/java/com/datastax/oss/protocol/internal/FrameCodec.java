@@ -270,6 +270,22 @@ public class FrameCodec<B> {
     return size + encoder.encodedSize(frame.message);
   }
 
+  /**
+   * Decodes the size of the body of the next frame contained in the given buffer.
+   *
+   * <p>The buffer must contain at least the frame's header. This method performs a relative read,
+   * it will not consume any data from the buffer.
+   */
+  public int decodeBodySize(B source) {
+    return primitiveCodec.readInt(source, V3_ENCODED_HEADER_SIZE - 4);
+  }
+
+  /**
+   * Decodes the next frame from the given buffer.
+   *
+   * <p>The buffer must contain at least one complete frame. It may be followed by additional data
+   * (which will not be consumed).
+   */
   public Frame decode(B source) {
     int directionAndVersion = primitiveCodec.readByte(source);
     boolean isResponse = (directionAndVersion & 0b1000_0000) == 0b1000_0000;
@@ -279,13 +295,6 @@ public class FrameCodec<B> {
     int streamId = readStreamId(source);
     int opcode = primitiveCodec.readByte(source);
     int length = primitiveCodec.readInt(source);
-
-    int actualLength = primitiveCodec.sizeOf(source);
-    ProtocolErrors.check(
-        length == actualLength,
-        "Declared length in header (%d) does not match actual length (%d)",
-        length,
-        actualLength);
 
     boolean decompressed = false;
     if (Flags.contains(flags, ProtocolConstants.FrameFlag.COMPRESSED)) {
