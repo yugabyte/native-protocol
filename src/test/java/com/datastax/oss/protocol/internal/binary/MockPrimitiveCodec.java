@@ -118,7 +118,7 @@ public class MockPrimitiveCodec implements PrimitiveCodec<MockBinaryString> {
   }
 
   @Override
-  public MockBinaryString readRetainingSlice(MockBinaryString source, int sliceLength) {
+  public MockBinaryString readRetainedSlice(MockBinaryString source, int sliceLength) {
     return source.slice(sliceLength);
   }
 

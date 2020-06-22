@@ -159,7 +159,7 @@ public class SegmentCodec<B> {
     assert primitiveCodec.sizeOf(source) == header.payloadLength + CRC32_LENGTH;
 
     // Extract payload:
-    B encodedPayload = primitiveCodec.readRetainingSlice(source, header.payloadLength);
+    B encodedPayload = primitiveCodec.readRetainedSlice(source, header.payloadLength);
 
     // Read and check CRC:
     int expectedPayloadCrc = 0;

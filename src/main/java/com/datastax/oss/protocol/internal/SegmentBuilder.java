@@ -87,7 +87,7 @@ public abstract class SegmentBuilder<B, StateT> {
             i < sliceCount - 1 || isExactMultiple
                 ? maxPayloadLength
                 : frameLength % maxPayloadLength;
-        B slicePayload = primitiveCodec.readRetainingSlice(frameBuffer, sliceLength);
+        B slicePayload = primitiveCodec.readRetainedSlice(frameBuffer, sliceLength);
         processSegment(new Segment<>(slicePayload, false), sliceStates.get(i));
       }
       // We've retained each slice, and won't reference this buffer anymore

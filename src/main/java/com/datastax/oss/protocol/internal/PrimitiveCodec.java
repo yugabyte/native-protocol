@@ -82,7 +82,7 @@ public interface PrimitiveCodec<B> {
    * to manage memory allocation, this must also "retain" the slice, so that it doesn't get recycled
    * if {@code source} is released.
    */
-  B readRetainingSlice(B source, int sliceLength);
+  B readRetainedSlice(B source, int sliceLength);
 
   /** Feeds all available bytes into the given CRC. This should not "consume" the bytes. */
   void updateCrc(B source, CRC32 crc);
