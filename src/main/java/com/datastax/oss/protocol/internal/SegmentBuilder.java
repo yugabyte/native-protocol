@@ -81,6 +81,7 @@ public abstract class SegmentBuilder<B, StateT> {
       frameCodec.encodeInto(frame, frameBodyLength, frameBuffer);
       boolean isExactMultiple = frameLength % maxPayloadLength == 0;
       int sliceCount = (frameLength / maxPayloadLength) + (isExactMultiple ? 0 : 1);
+      onLargeFrameSplit(frame, frameLength, sliceCount);
       List<StateT> sliceStates = splitState(frameState, sliceCount);
       for (int i = 0; i < sliceCount; i++) {
         int sliceLength =
@@ -96,12 +97,14 @@ public abstract class SegmentBuilder<B, StateT> {
       // Small request: append to an existing segment, together with other messages.
       if (currentPayloadLength + frameLength > maxPayloadLength) {
         // Current segment is full, process and start a new one:
+        onSegmentFull(frame, frameLength, currentPayloadLength, currentPayloadFrames.size());
         processCurrentPayload();
         resetCurrentPayload();
       }
       currentPayloadFrames.add(frame);
       currentPayloadStates.add(frameState);
       currentPayloadLength += frameLength;
+      onSmallFrameAdded(frame, frameLength, currentPayloadLength, currentPayloadFrames.size());
     }
   }
 
@@ -113,9 +116,70 @@ public abstract class SegmentBuilder<B, StateT> {
    */
   public void flush() {
     if (!currentPayloadFrames.isEmpty()) {
+      onLastSegmentFlushed(currentPayloadLength, currentPayloadFrames.size());
       processCurrentPayload();
       resetCurrentPayload();
     }
+  }
+
+  /**
+   * Invoked whenever a large frame needs to be split into multiple segments. This is intended for
+   * logs in subclasses, the default implementation is empty.
+   *
+   * @param frame the frame that is being split.
+   * @param frameLength the length of that frame in bytes.
+   * @param sliceCount the number of slices.
+   */
+  @SuppressWarnings("unused")
+  protected void onLargeFrameSplit(Frame frame, int frameLength, int sliceCount) {
+    // by default, nothing to do
+  }
+
+  /**
+   * Invoked whenever the current self-contained segment for small frames is full. It's about to get
+   * processed, and a new segment will be started. This is intended for logs in subclasses, the
+   * default implementation is empty.
+   *
+   * @param frame the frame that triggered this action. Note that it will <em>not</em> be included
+   *     in the current segment (since adding it would have brought the segment over its maximum
+   *     length).
+   * @param frameLength the length of that frame in bytes.
+   * @param currentPayloadLength the length of the segment's payload in bytes.
+   * @param currentFrameCount the number of frames in the segment.
+   */
+  @SuppressWarnings("unused")
+  protected void onSegmentFull(
+      Frame frame, int frameLength, int currentPayloadLength, int currentFrameCount) {
+    // by default, nothing to do
+  }
+
+  /**
+   * Invoked whenever a small frame was successfully added to the current self-contained segment,
+   * without bringing it over its size limit. This is intended for logs in subclasses, the default
+   * implementation is empty.
+   *
+   * @param frame the frame.
+   * @param frameLength the length of that frame in bytes.
+   * @param currentPayloadLength the new total length of the segment's payload, after the frame was
+   *     added.
+   * @param currentFrameCount the total number of frames in the payload, after the frame was added.
+   */
+  @SuppressWarnings("unused")
+  protected void onSmallFrameAdded(
+      Frame frame, int frameLength, int currentPayloadLength, int currentFrameCount) {
+    // by default, nothing to do
+  }
+
+  /**
+   * Invoked whenever {@link #flush()} was called and it produces one last self-contained segment.
+   * This is intended for logs in subclasses, the default implementation is empty.
+   *
+   * @param currentPayloadLength the length of the segment's payload in bytes.
+   * @param currentFrameCount the number of frames in the segment.
+   */
+  @SuppressWarnings("unused")
+  protected void onLastSegmentFlushed(int currentPayloadLength, int currentFrameCount) {
+    // by default, nothing to do
   }
 
   private void processCurrentPayload() {
