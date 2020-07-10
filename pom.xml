@@ -303,12 +303,12 @@ limitations under the License.]]>
       </build>
     </profile>
   </profiles>
-  <distributionManagement>
+<!--   <distributionManagement>
     <repository>
       <id>ossrh</id>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
-  </distributionManagement>
+  </distributionManagement> -->
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -335,4 +335,14 @@ limitations under the License.]]>
       <organizationUrl>https://www.yugabyte.com</organizationUrl>
     </developer>
   </developers>
+  <distributionManagement>
+    <repository>
+      <id>${yugabyte.releases.repository.id}</id>
+      <url>${yugabyte.releases.repository.url}</url>
+    </repository>
+    <snapshotRepository>
+      <id>${yugabyte.snapshots.repository.id}</id>
+      <url>${yugabyte.snapshots.repository.url}</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>
