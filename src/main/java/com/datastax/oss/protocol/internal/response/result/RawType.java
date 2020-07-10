@@ -444,7 +444,8 @@ public abstract class RawType {
       ProtocolConstants.DataType.TINYINT,
       ProtocolConstants.DataType.DURATION,
       ProtocolConstants.DataType.DATE,
-      ProtocolConstants.DataType.TIME
+      ProtocolConstants.DataType.TIME,
+      ProtocolConstants.DataType.JSONB
     };
     NullAllowingImmutableMap.Builder<Integer, RawType> builder =
         NullAllowingImmutableMap.builder(primitiveIds.length);

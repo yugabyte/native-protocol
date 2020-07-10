@@ -18,12 +18,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.datastax.oss</groupId>
+  <groupId>com.yugabyte</groupId>
   <artifactId>native-protocol</artifactId>
   <version>1.4.11-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
-  <name>An implementation of the Apache Cassandra® native protocol</name>
+  <name>An implementation of the Apache Cassandra® native protocol tailored for YugabyteDB</name>
   <description>
     A set of Java types representing the frames and messages of the Apache Cassandra® native
     protocol, with the associated serialization and deserialization logic (this is a third-party
@@ -303,12 +303,12 @@ limitations under the License.]]>
       </build>
     </profile>
   </profiles>
-  <distributionManagement>
+  <!-- <distributionManagement>
     <repository>
       <id>ossrh</id>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
-  </distributionManagement>
+  </distributionManagement> -->
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -318,15 +318,21 @@ limitations under the License.]]>
     </license>
   </licenses>
   <scm>
-    <connection>scm:git:git@github.com:datastax/native-protocol.git</connection>
-    <developerConnection>scm:git:git@github.com:datastax/native-protocol.git</developerConnection>
-    <url>https://github.com/datastax/native-protocol</url>
+    <connection>scm:git:git@github.com:yugabyte/native-protocol.git</connection>
+    <developerConnection>scm:git:git@github.com:yugabyte/native-protocol.git</developerConnection>
+    <url>https://github.com/yugabyte/native-protocol</url>
     <tag>HEAD</tag>
   </scm>
   <developers>
     <developer>
       <name>Various</name>
       <organization>DataStax</organization>
+    </developer>
+    <developer>
+      <name>Yugabyte Development Team</name>
+      <email>info@yugabyte.com</email>
+      <organization>YugaByte, Inc.</organization>
+      <organizationUrl>https://www.yugabyte.com</organizationUrl>
     </developer>
   </developers>
 </project>

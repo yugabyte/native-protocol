@@ -139,6 +139,7 @@ public class ProtocolConstants {
     public static final int SET = 0x0022;
     public static final int UDT = 0x0030;
     public static final int TUPLE = 0x0031;
+    public static final int JSONB = 0x0080;
   }
 
   public static class EventType {
